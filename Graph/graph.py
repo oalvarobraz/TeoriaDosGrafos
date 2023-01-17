@@ -74,12 +74,19 @@ class Graph:
                 highest_degree_node = i
         return highest_degree_node
 
-    def is_complet(self) -> int:
+    def is_complete(self) -> int:
+        """
+        Returns whether the graph is complete
+
+        :return: 0: ins´t complete
+                 1: is complete
+
+        """
         max_degree_out = self.count_nodes - 1
-        complet = 0
+        complete = 0
         for i in range(self.count_nodes):
             if self.degree_out(i) >= max_degree_out:
-                complet = 1
+                complete = 1
             else:
-                complet = 0
-        return complet
+                complete = 0
+        return complete
