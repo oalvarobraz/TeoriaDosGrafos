@@ -172,3 +172,44 @@ class Graph:
             return self.verifica(ciclo)
         else:
             return False
+
+    def busca_profundidade(self, s):
+        desc = [0 for i in range(self.count_nodes)]
+        S = [s]
+        R = [s]
+        desc[s] = 1
+        while len(S) != 0:
+            u = S[-1]
+            desempilhar = True
+            for v in self.adj_list[u]:
+                if desc[v] == 0:
+                    desempilhar = False
+                    S.append(v)
+                    R.append(v)
+                    desc[v] = 1
+                    break
+            if desempilhar:
+                S.pop()
+        return R
+
+    def conexidade(self):
+        R = self.busca_profundidade(0)
+        for i in range(len(self.adj_list)):
+            if not R.__contains__(i):
+                return False
+        return True
+
+    # def componentes_conexas(self):
+    #     nodes = []
+    #     componente = []
+    #     R = self.busca_profundidade(0)
+    #     for i in range(len(self.adj_list)):
+    #         w = self.adj_list[i]
+    #         x = [i, self.adj_list[i]]
+    #         y = [self.adj_list[i], i]
+    #         if not R.__contains__(i) and not nodes.__contains__(i):
+    #             nodes.append(i)
+    #     for i in range(len(nodes)):
+    #         for j in range(len(self.adj_list[i])):
+    #             if 
+    #     return componente
