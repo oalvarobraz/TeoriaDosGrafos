@@ -108,7 +108,8 @@ class Graph:
                 return False
         return True
 
-    def complement(self, g2):
+    def complement(self):
+        g2 = Graph(self.node_count)
         """Returns the complent of a graph"""
         for i in range(len(self.adj_list)):
             for j in range(len(self.adj_list)):
@@ -118,6 +119,8 @@ class Graph:
 
     def subgraph(self, g2):
         """Returns True iif g2 is a subgraph of self"""
+        if g2.node_count > self.node_count or g2.edge_count > self.edge_count:
+            return False
         for i in range(len(g2.adj_list)):
             for j in range(len(g2.adj_list[i])):
                 if j not in self.adj_list[i]:
@@ -174,7 +177,7 @@ class Graph:
             return False
 
     def busca_profundidade(self, s):
-        desc = [0 for i in range(self.count_nodes)]
+        desc = [0 for i in range(len(self.count_nodes))]
         S = [s]
         R = [s]
         desc[s] = 1
@@ -192,7 +195,7 @@ class Graph:
                 S.pop()
         return R
 
-    def conexidade(self):
+    def connectedness(self):
         R = self.busca_profundidade(0)
         for i in range(len(self.adj_list)):
             if not R.__contains__(i):
