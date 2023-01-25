@@ -201,6 +201,20 @@ class Graph:
             if not R.__contains__(i):
                 return False
         return True
+    
+    def bfs(self, s: int):
+        desc = [0 for i in range(len(self.adj_list))]
+        Q = [s]
+        R = [s]
+        desc[s] = 1
+        while len(Q) != 0:
+            u = Q.pop(0)
+            for v in self.adj_list[u]:
+                if desc[v] == 0:
+                    Q.append(v)
+                    R.append(v)
+                    desc[v] = 1
+        return R
 
     # def componentes_conexas(self):
     #     nodes = []
