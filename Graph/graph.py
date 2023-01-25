@@ -195,12 +195,16 @@ class Graph:
                 S.pop()
         return R
 
-    def connectedness(self):
-        R = self.busca_profundidade(0)
+    def connected(self):
+        R = self.depth_first_search(0)
         for i in range(len(self.adj_list)):
             if not R.__contains__(i):
                 return False
         return True
+
+    def connected2(self):
+        return len(self.depth_first_search(0)) == self.node_count
+
     
     def bfs(self, s: int):
         desc = [0 for i in range(len(self.adj_list))]
