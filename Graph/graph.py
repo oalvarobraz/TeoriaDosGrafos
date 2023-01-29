@@ -346,3 +346,66 @@ class Graph:
         self.adj_list.pop(u)
         self.count_nodes -= 1
         
+        def return_list_adj(self):
+        adj_list = [[] for _ in range(self.count_nodes)]
+        for i in range(self.count_nodes):
+            for j in self.adj_list[i]:
+                adj_list[i].append(j)
+        return adj_list
+
+    def bredth_first_search_matrix(self, adj_matrix, s: int):
+        desc = [0 for i in range(len(self.adj_list))]
+        Q = [s]
+        R = [s]
+        desc[s] = 1
+        while len(Q) != 0:
+            u = Q.pop(0)
+            for v in self.adj_list[u]:
+                if desc[v] == 0:
+                    Q.append(v)
+                    R.append(v)
+                    desc[v] = 1
+        return R
+
+    def is_connected_dfs(self, s):
+        desc = [0 for i in range(self.count_nodes)]
+        S = [s]
+        R = [s]
+        desc[s] = 1
+        while len(S) != 0:
+            u = S[-1]
+            desempilhar = True
+            for v in self.adj_list[u]:
+                if desc[v] == 0:
+                    desempilhar = False
+                    S.append(v)
+                    R.append(v)
+                    desc[v] = 1
+                    break
+            if desempilhar:
+                S.pop()
+        if len(R) == len(self.adj_list):
+            return True
+        return False
+
+    def search_dfs(self, s, t):
+        desc = [0 for i in range(self.count_nodes)]
+        S = [s]
+        R = [s]
+        desc[s] = 1
+        while len(S) != 0:
+            u = S[-1]
+            desempilhar = True
+            for v in self.adj_list[u]:
+                if v == t:
+                    S.append(v)
+                    return S
+                if desc[v] == 0:
+                    desempilhar = False
+                    S.append(v)
+                    R.append(v)
+                    desc[v] = 1
+                    break
+            if desempilhar:
+                S.pop()
+        return S
