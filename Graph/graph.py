@@ -343,10 +343,14 @@ class Graph:
             if self.adj_list[i].__contains__(u):
                 self.adj_list[i].remove(u)
                 self.count_edges -= 2
+                
+            for j in range(len(self.adj_list[i])):
+                if self.adj_list[i][j] > u:
+                    self.adj_list[i][j] -= 1
         self.adj_list.pop(u)
         self.count_nodes -= 1
         
-        def return_list_adj(self):
+    def return_list_adj(self):
         adj_list = [[] for _ in range(self.count_nodes)]
         for i in range(self.count_nodes):
             for j in self.adj_list[i]:
