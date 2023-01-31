@@ -32,6 +32,9 @@ class Graph:
             u = S[-1]
             desempilhar = True
             for v in self.adj_list[u]:
+                if v == end:
+                    R.append(v)
+                    return R
                 if desc[v] == 0:
                     desempilhar = False
                     S.append(v)
@@ -40,6 +43,7 @@ class Graph:
                     break
             if desempilhar:
                 S.pop()
+                R.pop()
         return R
 
 
@@ -80,3 +84,5 @@ def create_graph(arq):
     return g1, start_lab, end_lab
 
 
+g1, start, end = create_graph("toy.txt")
+print(g1.depth_search(start, end))
