@@ -15,7 +15,7 @@ class Graph:
 
     def add_directed_edge(self, a: tuple, arg2: tuple):
         self.adj_list[a].append(arg2)
-        self.count_edges += 2
+        self.count_edges += 1
 
     def depth_search(self, start: tuple, end: tuple):
         desc = {}
