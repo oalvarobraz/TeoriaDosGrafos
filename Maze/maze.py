@@ -1,6 +1,6 @@
 import pandas as pd
 import timeit
-from Graph import Graph
+from graph import Graph
 
 
 def create_graph(arq):
