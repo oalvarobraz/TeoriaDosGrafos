@@ -1,11 +1,10 @@
 import pandas as pd
+from Graph import Graph
 import timeit
-from graph import Graph
+import os
 
 
 def create_graph(arq):
-    start_time = timeit.default_timer()
-
     with open(arq) as test:
         maze = []
         for line in test:
@@ -36,19 +35,33 @@ def create_graph(arq):
                     if maze[i][j - 1] != "#":
                         g1.add_directed_edge((i, j), (i, j - 1))
 
-    end_time = timeit.default_timer()
+    return df, g1, start_lab, end_lab
 
-    execution_time = (end_time - start_time)
 
-    return df, g1, start_lab, end_lab, execution_time
+def show_walk(graph, start, end):
+    for i in graph.depth_search(start, end):
+        maze[i[1]][i[0]] = '.'
+    print(pd.DataFrame(maze))
+
+    df = pd.DataFrame(maze)
+    with open("result.txt", 'w') as f:
+        dfAsString = df.to_string(header=False, index=False)
+        f.write(dfAsString)
 
 
 op = '1'
 while op != '0':
     op = str(input("Informe o nome do arquivo (0 para sair) "))
     if op != '0':
-        maze, g1, start, end, execution_time = create_graph(op)
+        maze, g1, start, end = create_graph(op)
+        start_time = timeit.default_timer()
+        walk = g1.depth_search(start, end)
+        execution_time = float('%g' % (timeit.default_timer() - start_time))
         print("|| IMPRIMINDO LABBIRINTO ||")
         print(maze)
-        print(f"\n|| Caminho: {g1.depth_search(start, end)}")
+        print(f"\n|| Caminho: {walk}")
         print(f"|| Tempo: {execution_time}")
+
+        show_walk(g1, start, end)
+        os.system("PAUSE")
+        os.system('cls')
