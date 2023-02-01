@@ -12,8 +12,8 @@ def create_graph(arq):
 
     graph = Graph(len(make_maze), len(make_maze[0]))
 
-    sl = -1
-    el = -1
+    sl = (0, 0)
+    el = (0, 0)
     for i in range(len(make_maze)):
         for j in range(len(make_maze[i])):
             if make_maze[i][j] == "#":
@@ -39,10 +39,9 @@ def create_graph(arq):
     return make_maze, graph, sl, el
 
 
-def show_walk(graph, start, end):
-    for i in graph.depth_search(start, end):
-        maze[i[1]][i[0]] = '.'
-    print(pd.DataFrame(maze))
+def show_walk(path):
+    for i in path:
+        maze[i[0]][i[1]] = '.'
 
     df = pd.DataFrame(maze)
     with open("result.txt", 'w') as f:
@@ -54,12 +53,13 @@ op = '1'
 while op != '0':
     op = str(input("|| Informe o nome do arquivo (0 para sair): mazes/"))
     if op != '0':
-        maze, g1, start, end = create_graph(op)
         start_time = timeit.default_timer()
+        maze, g1, start, end = create_graph(op)
         walk = g1.depth_search(start, end)
-        execution_time = float('%g' % (timeit.default_timer() - start_time))
         print(f"|| Caminho: {walk}")
+        execution_time = float('%g' % (timeit.default_timer() - start_time))
         print(f"|| Tempo: {execution_time}")
+        show_walk(walk)
         print("|| O caminho está em result.txt \n")
         os.system("PAUSE")
         os.system('cls') or None
