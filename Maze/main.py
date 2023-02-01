@@ -9,10 +9,11 @@ def create_graph(arq):
         make_maze = []
         for line in test:
             make_maze.append([i for i in line.strip("\n")])
-        df = pd.DataFrame(make_maze)
 
-    graph = Graph(len(df.axes[0]), len(df.axes[1]))
+    graph = Graph(len(make_maze), len(make_maze[0]))
 
+    sl = -1
+    el = -1
     for i in range(len(make_maze)):
         for j in range(len(make_maze[i])):
             if make_maze[i][j] == "#":
@@ -35,7 +36,7 @@ def create_graph(arq):
                     if make_maze[i][j - 1] != "#":
                         graph.add_directed_edge((i, j), (i, j - 1))
 
-    return df, graph, sl, el
+    return make_maze, graph, sl, el
 
 
 def show_walk(graph, start, end):
