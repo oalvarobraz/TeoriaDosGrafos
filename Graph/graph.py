@@ -36,10 +36,6 @@ class Graph:
         self.add_directed_edge(u, v)
         self.add_directed_edge(v, u)
 
-    def add_node(self):
-        self.adj_list.append([])
-        self.count_nodes += 1
-
     def degree_out(self, u: int) -> int:  # função que retorna o grau de saida do no, depois validar e criar uma função
         # de validação
         return len(self.adj_list[u])
@@ -113,7 +109,6 @@ class Graph:
         return self.density() == 1
         # return self.count_nodes * (self.count_nodes - 1) == self.count_edges
 
-
     def density(self):
         return self.count_edges / (self.count_nodes * (self.count_nodes - 1))
 
@@ -124,8 +119,8 @@ class Graph:
         return True
 
     def complement(self):
-        g2 = Graph(self.count_nodes)
         """Returns the complent of a graph"""
+        g2 = Graph(self.count_nodes)
         for i in range(len(self.adj_list)):
             for j in range(len(self.adj_list)):
                 if j not in self.adj_list[i] and j != i and j not in g2.adj_list[i]:
@@ -193,7 +188,7 @@ class Graph:
             return False
 
     def depth_first_search(self, s):
-        desc = [0 for i in range(len(self.count_nodes))]
+        desc = [0 for i in range(self.count_nodes)]
         S = [s]
         R = [s]
         desc[s] = 1
@@ -211,18 +206,18 @@ class Graph:
                 S.pop()
         return R
 
-    def connected(self):
+    def connected2(self):
         R = self.depth_first_search(0)
         for i in range(len(self.adj_list)):
             if not R.__contains__(i):
                 return False
         return True
 
-    def connected2(self):
-        return len(self.depth_first_search(0)) == self.node_count
+    def connected(self):
+        return len(self.depth_first_search(0)) == self.count_nodes
 
-    def bfs(self, s: int):
-        desc = [0 for i in range(len(self.adj_list))]
+    def bredth_first_search(self, s: int):
+        desc = [0 for _ in range(len(self.adj_list))]
         Q = [s]
         R = [s]
         desc[s] = 1
@@ -241,7 +236,7 @@ class Graph:
 
     def to_adj_matrix(self):
         """Returns the adj_matrix representation of the graph"""
-        adj_matrix = [[0 for i in range(len(self.adj_list))] for j in range(len(self.adj_list))]
+        adj_matrix = [[0 for _ in range(len(self.adj_list))] for _ in range(len(self.adj_list))]
         for i in range(len(self.adj_list)):
             for j in self.adj_list[i]:
                 adj_matrix[i][j] = 1
@@ -323,7 +318,7 @@ class Graph:
         """Removes edge from u to v (and NOT from v to u)"""
         if self.adj_list[u].__contains__(v):
             self.adj_list[u].remove(v)
-            self.count_nodes -= 1
+            self.count_edges -= 1
         else:
             print(f"The node {u} don't have the edge to the node {v}")
 
@@ -343,13 +338,13 @@ class Graph:
             if self.adj_list[i].__contains__(u):
                 self.adj_list[i].remove(u)
                 self.count_edges -= 2
-                
-            for j in range(len(self.adj_list[i])):
-                if self.adj_list[i][j] > u:
-                    self.adj_list[i][j] -= 1
+
+                for j in range(len(self.adj_list[i])):
+                    if self.adj_list[i][j] > u:
+                        self.adj_list[i][j] -= 1
         self.adj_list.pop(u)
         self.count_nodes -= 1
-        
+
     def return_list_adj(self):
         adj_list = [[] for _ in range(self.count_nodes)]
         for i in range(self.count_nodes):
@@ -413,3 +408,27 @@ class Graph:
             if desempilhar:
                 S.pop()
         return S
+
+    def not_visited_neighbor(self, u, desc):
+        for v in self.adj_list[u]:
+            if desc[v] == 0:
+                return v
+        return -1
+
+    def depth_first_search2(self, s: int):
+        desc = [0 for _ in range(len(self.adj_list))]
+        S = [s]
+        R = [s]
+        desc[s] = 1
+
+        while len(S) != 0:
+            u = S[0]
+            v = self.not_visited_neighbor(u, desc)
+            if v != -1:
+                # S.insert(0, v)
+                S.append(v)
+                R.append(v)
+                desc[v] = 1
+            else:
+                S.pop()
+        return R
