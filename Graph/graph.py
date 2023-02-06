@@ -432,3 +432,36 @@ class Graph:
             else:
                 S.pop()
         return R
+    
+    
+    
+    def depth_first_search3(self, s: int):
+        desc = [0 for _ in range(len(self.adj_list))]
+        S = [s]
+        R = [s]
+        desc[s] = 1
+
+        while len(S) != 0:
+            u = S[-1]
+            v = self.unvisited_neighbor(u, desc)
+            if v != -1:
+                S.append(v)
+                R.append(v)
+                desc[v] = 1
+            else:
+                S.pop()
+        return R
+
+    def dfs_rec(self, s: int):
+        desc = [0 for _ in range(len(self.adj_list))]
+        R = []
+        self.dfs_rec_aux(s, desc, R)
+        return R
+
+    def dfs_rec_aux(self, u, desc, R):
+        desc[u] = 1
+        R.append(u)
+        for v in self.adj_list[u]:
+            if desc[v] == 0:
+                self.dfs_rec_aux(v, desc, R)
+        
