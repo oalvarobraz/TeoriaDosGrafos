@@ -70,3 +70,9 @@ class WeightedGraph:
             if not trocou:
                 break
         return dist, pred
+
+    def get_weight(self, i: int, j: int):
+   for edge in self.adj_list[i]:
+        if edge[0] == j:
+            return edge[1]
+    return float('inf')
