@@ -1,4 +1,5 @@
 from typing import Tuple
+import heapq
 
 
 class WeightedGraph:
@@ -55,7 +56,7 @@ class WeightedGraph:
 
     def bellmand_ford_better(self, s):
         dist = [float("inf") for _ in range(len(self.adj_list))]
-        pred = [-1 for _ in range(len(self.adj_list))]
+        pred = [None for _ in range(len(self.adj_list))]
 
         dist[s] = 0
 
@@ -72,7 +73,74 @@ class WeightedGraph:
         return dist, pred
 
     def get_weight(self, i: int, j: int):
-   for edge in self.adj_list[i]:
-        if edge[0] == j:
-            return edge[1]
-    return float('inf')
+        for edge in self.adj_list[i]:
+              if edge[0] == j:
+                 return edge[1]
+        return float('inf')
+
+    def edge_exist(self, i: int, j: int):
+        for tupla in self.adj_list[i]:
+            if tupla[0] == j:
+                return 1
+        return 0
+
+    def floyd_warshall(self):
+        dist = [[float('inf') for _ in range(self.node_count)] for _ in range(self.node_count)]
+        pred = [[None for _ in range(self.node_count)] for _ in range(self.node_count)]
+
+        for i in range(self.node_count):
+            for j in range(self.node_count):
+                if i == j:
+                    dist[i][j] = 0
+                elif self.edge_exist(i, j):
+                    dist[i][j] = self.get_weight(i, j)
+                    pred[i][j] = i
+
+        for k in range(self.node_count):
+            for i in range(self.node_count):
+                for j in range(self.node_count):
+                    if dist[i][j] > dist[i][k] + dist[k][j]:
+                        dist[i][j] = dist[i][k] + dist[k][j]
+                        pred[i][j] = pred[k][j]
+        return dist, pred
+
+    def min_dist_Q(self, Q, dist):
+        min_dist = float("inf")
+        min_node = None
+
+        for node in Q:
+            if dist[node] < min_dist:
+                min_dist = dist[node]
+                min_node = node
+        return min_node
+
+    def dijkstra(self, s: int):
+        dist = [float("inf") for _ in range(self.node_count)]
+        pred = [None for _ in range(self.node_count)]
+        dist[s] = 0
+        Q =  [v for v in range(self.node_count)]
+
+        while len(Q) != 0:
+            u = self.min_dist_Q(Q, dist)
+            Q.remove(u)
+            for v, w in self.adj_list[u]:
+                if dist[v] > dist[u] + w:
+                    dist[v] = dist[u] + w
+                    pred[v] = u
+        return dist, pred
+
+    def dijkstra_fila_prior(self, s: int):
+        dist = [float("inf") for _ in range(self.node_count)]
+        pred = [None for _ in range(self.node_count)]
+        pq = []
+        heapq.heapify(pq)
+        dist[s] = 0
+        heapq.heappush(pq, [0, s])
+        while len(pq) != 0:
+            [min_dist, u] = heapq.heappop(pq)
+            for (v,w) in self.adj_list[u]:
+                if dist[v] > dist[u] + w:
+                    dist[v] = dist[u] + w
+                    pred[v] = u
+                    heapq.heappush(pq, [dist[v], v])
+        return dist, pred
