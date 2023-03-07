@@ -1,79 +1,56 @@
-import pandas as pd
-from weightedGraph import WeightedGraph
-import os
+from typing import Tuple, Optional
+import heapq
 
 
-def msg_error():
-    print("|| Possíveis erros:")
-    print("-> Arquivo não esta na pasta critical_path")
-    print("-> Nome do arquivo escrito de forma incorreta")
+class WeightedGraph:
+    def __init__(self, node_count: int = 0, count_edges: int = 0, adj_list: Optional[dict[str, dict[str, int]]] = None) -> None:
+        self.node_count = node_count  # número de nós
+        self.count_edges = count_edges  # número de arestas
+        self.adj_list = adj_list if adj_list is not None else {}  # lista de adjacência
 
+    def add_node(self, node_name: str) -> None:
+        node_name = node_name.strip()
+        if node_name not in self.adj_list:
+            self.adj_list[node_name] = {}
+            self.node_count += 1
 
-def create_graph(nome_arquivo):
-    filename, extension = os.path.splitext(nome_arquivo)
-    if extension == ".xlsx":
-        try:
-            arq = pd.read_excel("critical_path/" + nome_arquivo)
-        except FileNotFoundError:
-            return None
-    elif extension == ".csv":
-        try:
-            arq = pd.read_csv("critical_path/" + nome_arquivo)
-        except FileNotFoundError:
-            return None
-    else:
-        return None
+    def add_directed_edge(self, u: str, v: str, w: int):
+        u = u.strip()
+        v = v.strip()
+        if u not in self.adj_list:
+            self.adj_list[u] = {}
+        if v not in self.adj_list[u]:
+            self.adj_list[u][v] = w
+        self.count_edges += 1
 
-    graph = WeightedGraph()
-    graph.add_node("s")
-    # Adicionando todas as arestas dos nos para t
-    for linha in arq.index:
-        graph.add_directed_edge(arq["Código"][linha], "t", arq["Duração"][linha])
-    graph.add_node("t")
+    def dijkstra_max_path(self) -> Tuple[int, list[str]]:
+        # Define a distância máxima para cada nó como negativa infinita
+        distances = {node: float('-inf') for node in self.adj_list}
 
-    # Adicionando as arestas iniciais de s para os códigos que não tem dependencia
-    for linha in arq.index:
-        if pd.isna(arq["Dependências"][linha]):
-            graph.add_directed_edge("s", arq["Código"][linha], 0)
+        # Definindo a distância do nó "s" como 0
+        distances['s'] = 0
 
-    # Adicionando as arestas de dependência
-    for linha in arq.index:
-        if not pd.isna(arq["Dependências"][linha]):
-            dependencias = arq["Dependências"][linha].split(';')
-            for dependencia in dependencias:
-                if dependencia != 'nan':
-                    graph.add_directed_edge(dependencia, arq["Código"][linha], arq["Duração"][linha])
+        # Inicializa a heap com o nó "s"
+        heap = [(-distances['s'], 's')]
 
-    return graph, arq
+        # Define o dicionário de predecessores
+        predecessors = {node: None for node in self.adj_list}
 
+        while heap:
+            (distance, current_node) = heapq.heappop(heap)
+            distance = -distance
+            for neighbor, weight in self.adj_list[current_node].items():
+                new_distance = distance + weight
+                if new_distance > distances[neighbor]:
+                    distances[neighbor] = new_distance
+                    predecessors[neighbor] = current_node
+                    heapq.heappush(heap, (-new_distance, neighbor))
 
-# Calculando o caminho máximo e imprimindo para o usuário as materias que compoem e o tempo mónimo
-def max_path(graph: WeightedGraph, arq):
-    temp, dj_max_path = graph.dijkstra_max_path()
+        max_path = ['t']
+        current_node = 't'
+        while predecessors[current_node] is not None:
+            max_path.append(predecessors[current_node])
+            current_node = predecessors[current_node]
+        max_path.reverse()
 
-    print("Caminho Crítico:")
-    for i in dj_max_path:
-        if any(char.isdigit() for char in i):
-            vish = arq.loc[arq["Código"] == i]
-            if not vish.empty:
-                print(f" - {vish['Nome'].values[0]}")
-    print(f"Tempo Mínimo: {temp}")
-
-
-op = '1'
-while op != '0':
-    op = str(input("\n|| Informe o nome do arquivo (0 para sair): critical_path/"))
-    if op != '0':
-        name, exten = os.path.splitext(op)
-        if exten == ".xlsx" or exten == ".csv":
-            print("\nProcessando...")
-            if create_graph(op) is not None:
-                g1, arquivo = create_graph(op)
-                max_path(g1, arquivo)
-            else:
-                print("\nArquivo não encontrado")
-                msg_error()
-        else:
-            print("Formato não suportado! ")
-            msg_error()
-    os.system('cls')
+        return distances['t'], max_path
